@@ -1,0 +1,87 @@
+/**
+ * Layout Framework
+ * Responsive grid and container system
+ */
+
+/* Main Application Container */
+.app-container {
+  max-width: var(--app-container-max-width);
+  margin: 0 auto;
+  padding: var(--app-space-xl) var(--app-space-lg);
+}
+
+/* Content Container */
+.app-content {
+  max-width: var(--app-content-max-width);
+  margin: 0 auto;
+}
+
+/* Section Spacing */
+.app-section {
+  margin-bottom: var(--app-section-margin);
+}
+
+.app-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Card Layout */
+.app-card {
+  padding: var(--app-card-padding);
+  background-color: var(--pf-v6-global--BackgroundColor--100);
+  border: 1px solid var(--pf-v6-global--BorderColor--100);
+  border-radius: var(--pf-v6-global--BorderRadius--sm);
+  box-shadow: var(--app-shadow-sm);
+}
+
+/* Grid System */
+.app-grid {
+  display: grid;
+  gap: var(--app-space-lg);
+}
+
+.app-grid--2-col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.app-grid--3-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .app-container {
+    padding: var(--app-space-lg) var(--app-space-md);
+  }
+
+  .app-grid--2-col,
+  .app-grid--3-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stack Layout */
+.app-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-md);
+}
+
+.app-stack--lg {
+  gap: var(--app-space-lg);
+}
+
+.app-stack--xl {
+  gap: var(--app-space-xl);
+}
+
+/* Inline Layout */
+.app-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-sm);
+}
+
+.app-inline--lg {
+  gap: var(--app-space-md);
+}
