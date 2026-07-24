@@ -6,6 +6,40 @@ import { Alert, FormGroup, DescriptionList, DescriptionListGroup, DescriptionLis
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import { useAppContext } from '../../context/AppContext';
 
+/**
+ * Format response body for display
+ */
+function formatResponseBody(data: any): string {
+  // Handle empty responses
+  if (data === null || data === undefined || data === '') {
+    return '// Empty response - event was accepted by the webhook';
+  }
+
+  // Handle string responses
+  if (typeof data === 'string') {
+    // If it's already JSON string, try to parse and format it
+    try {
+      const parsed = JSON.parse(data);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      // Not JSON, return as-is with comment
+      return data.trim() || '// Empty response - event was accepted by the webhook';
+    }
+  }
+
+  // Handle objects and arrays
+  try {
+    const formatted = JSON.stringify(data, null, 2);
+    // Check if result is just empty object or array
+    if (formatted === '{}' || formatted === '[]') {
+      return '// Empty response - event was accepted by the webhook';
+    }
+    return formatted;
+  } catch {
+    return String(data);
+  }
+}
+
 export function ResponseDisplay() {
   const { state } = useAppContext();
 
@@ -54,7 +88,7 @@ export function ResponseDisplay() {
 
       <FormGroup label="Response Body" fieldId="response-body">
         <CodeEditor
-          code={JSON.stringify(response.data, null, 2)}
+          code={formatResponseBody(response.data)}
           language={Language.json}
           isReadOnly
           height="300px"
@@ -62,6 +96,7 @@ export function ResponseDisplay() {
             minimap: { enabled: false },
             lineNumbers: 'on',
             scrollBeyondLastLine: false,
+            wordWrap: 'on',
           }}
         />
       </FormGroup>

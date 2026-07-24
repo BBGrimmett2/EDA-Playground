@@ -6,6 +6,7 @@ import express from 'express';
 import { corsMiddleware } from './middleware/cors';
 import { errorHandler } from './middleware/errorHandler';
 import integrationsRouter from './routes/integrations';
+import proxyRouter from './routes/proxy';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.get('/health', (_req, res) => {
 
 // API routes
 app.use('/api/integrations', integrationsRouter);
+app.use('/api/proxy', proxyRouter);
 
 // Error handling (must be last)
 app.use(errorHandler);

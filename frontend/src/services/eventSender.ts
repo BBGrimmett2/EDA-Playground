@@ -5,8 +5,11 @@
 import axios from 'axios';
 import type { ApiResponse, AuthType } from '../types/integration';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 /**
- * Send event payload to EDA webhook
+ * Send event payload to EDA webhook via backend proxy
+ * Uses proxy to bypass CORS restrictions
  */
 export async function sendEventToEDA(
   url: string,
@@ -14,34 +17,44 @@ export async function sendEventToEDA(
   authToken: string,
   authType: AuthType
 ): Promise<ApiResponse> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  };
-
-  // Handle Bearer token authentication
-  if (authType === 'bearer' && authToken.trim()) {
-    let token = authToken.trim();
-    // Auto-prefix "Bearer " if not present
-    if (!token.toLowerCase().startsWith('bearer ')) {
-      token = `Bearer ${token}`;
-    }
-    headers['Authorization'] = token;
-  }
-
   const startTime = Date.now();
 
   try {
-    const response = await axios.post(url, payload, {
-      headers,
-      timeout: 30000,
-      validateStatus: () => true, // Don't throw on any status code
-    });
+    // Send request through backend proxy to bypass CORS
+    const response = await axios.post<ApiResponse>(
+      `${API_BASE_URL}/api/proxy`,
+      {
+        url,
+        payload,
+        authToken,
+        authType,
+      },
+      {
+        timeout: 35000, // Slightly longer than backend timeout
+        validateStatus: () => true,
+      }
+    );
 
     const duration = Date.now() - startTime;
 
+    // If backend returned success, return the proxied response
+    if (response.status === 200 && response.data) {
+      return {
+        ...response.data,
+        duration: response.data.duration || duration,
+      };
+    }
+
+    // If backend returned an error, throw it
+    if (response.status >= 400) {
+      throw new Error(
+        response.data?.message || response.data?.error || 'Proxy request failed'
+      );
+    }
+
+    // Fallback response
     return {
-      success: response.status >= 200 && response.status < 300,
+      success: false,
       statusCode: response.status,
       statusText: response.statusText,
       headers: response.headers,
