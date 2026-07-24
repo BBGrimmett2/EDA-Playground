@@ -1,0 +1,58 @@
+{
+  "id": "splunk-itsi",
+  "name": "Splunk ITSI Notable Events",
+  "category": "monitoring",
+  "description": "Splunk IT Service Intelligence notable event webhooks for service health degradation",
+  "authTypes": ["bearer", "none"],
+  "defaultAuthType": "bearer",
+  "examplePayload": {
+    "event_type": "notable_event",
+    "event_id": "notable_12345_67890",
+    "severity": "high",
+    "source": "ITSI",
+    "title": "Service Degradation Detected: Web Application",
+    "description": "Response time for web-application service exceeded threshold of 2000ms. Current average: 3500ms.",
+    "status": "active",
+    "service": "web-application",
+    "kpi": "response_time",
+    "host": "app-server-01",
+    "timestamp": "2026-07-24T14:30:00Z",
+    "impact": {
+      "service_health_score": 65,
+      "kpi_threshold": 2000,
+      "kpi_current_value": 3500,
+      "affected_users_estimate": 450
+    },
+    "metadata": {
+      "splunk_server": "splunk.example.com",
+      "search_name": "Service Health Monitor - Web App",
+      "owner": "ops-team",
+      "correlation_search": "Web App Response Time Anomaly",
+      "urgency": "high",
+      "priority": 1
+    },
+    "time_range": {
+      "earliest": "2026-07-24T14:25:00Z",
+      "latest": "2026-07-24T14:30:00Z"
+    },
+    "related_events": [
+      {
+        "type": "alert",
+        "id": "alert_99887",
+        "message": "Database connection pool nearing capacity"
+      }
+    ]
+  },
+  "payloadSchema": {
+    "type": "object",
+    "required": ["event_type", "severity", "title", "service"],
+    "properties": {
+      "event_type": {"type": "string"},
+      "severity": {"enum": ["low", "medium", "high", "critical"]},
+      "status": {"enum": ["active", "resolved", "acknowledged"]},
+      "title": {"type": "string"}
+    }
+  },
+  "documentation": "https://docs.splunk.com/Documentation/ITSI/latest/Configure/CreateNotableEvents",
+  "tags": ["splunk", "itsi", "monitoring", "notable-events", "service-intelligence"]
+}

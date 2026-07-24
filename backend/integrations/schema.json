@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/your-org/eda-dev-tool/schema/integration.json",
+  "title": "EDA Integration Definition",
+  "description": "Schema for Event-Driven Ansible integration definitions",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique identifier using lowercase letters, numbers, and hyphens (e.g., 'prometheus-alert')"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable display name (e.g., 'Prometheus Alertmanager')"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["monitoring", "ticketing", "scm", "messaging", "security", "generic"],
+      "description": "Category for grouping integrations"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the integration and its purpose"
+    },
+    "authTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["bearer", "hmac", "mtls", "none"]
+      },
+      "minItems": 1,
+      "description": "Supported authentication methods for this integration"
+    },
+    "defaultAuthType": {
+      "type": "string",
+      "enum": ["bearer", "hmac", "mtls", "none"],
+      "description": "Default authentication method to use"
+    },
+    "examplePayload": {
+      "type": "object",
+      "description": "Sample JSON payload representing a typical event from this source"
+    },
+    "payloadSchema": {
+      "type": "object",
+      "description": "Optional JSON Schema for validating payloads (useful for form generation)"
+    },
+    "documentation": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to official documentation for this integration"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags for filtering and discovery"
+    }
+  },
+  "required": ["id", "name", "category", "examplePayload", "authTypes"],
+  "additionalProperties": false
+}

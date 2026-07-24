@@ -1,0 +1,65 @@
+{
+  "id": "prometheus-alertmanager",
+  "name": "Prometheus Alertmanager",
+  "category": "monitoring",
+  "description": "Prometheus Alertmanager webhook notifications for firing and resolved alerts",
+  "authTypes": ["bearer", "none"],
+  "defaultAuthType": "bearer",
+  "examplePayload": {
+    "version": "4",
+    "groupKey": "{}:{alertname=\"HighCPUUsage\"}",
+    "truncatedAlerts": 0,
+    "status": "firing",
+    "receiver": "eda-webhook",
+    "groupLabels": {
+      "alertname": "HighCPUUsage"
+    },
+    "commonLabels": {
+      "alertname": "HighCPUUsage",
+      "severity": "critical",
+      "instance": "server-01:9100",
+      "job": "node-exporter",
+      "environment": "production"
+    },
+    "commonAnnotations": {
+      "description": "CPU usage is above 90% for more than 5 minutes on server-01",
+      "summary": "High CPU usage detected",
+      "runbook_url": "https://runbooks.example.com/high-cpu"
+    },
+    "externalURL": "http://alertmanager:9093",
+    "alerts": [
+      {
+        "status": "firing",
+        "labels": {
+          "alertname": "HighCPUUsage",
+          "severity": "critical",
+          "instance": "server-01:9100",
+          "job": "node-exporter",
+          "environment": "production"
+        },
+        "annotations": {
+          "description": "CPU usage is at 95% on server-01",
+          "summary": "High CPU usage"
+        },
+        "startsAt": "2026-07-24T10:00:00.000Z",
+        "endsAt": "0001-01-01T00:00:00Z",
+        "generatorURL": "http://prometheus:9090/graph?g0.expr=100+-+%28avg+by%28instance%29+%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D%29%29+%2A+100%29+%3E+90",
+        "fingerprint": "1a2b3c4d5e6f7890"
+      }
+    ]
+  },
+  "payloadSchema": {
+    "type": "object",
+    "required": ["version", "status", "alerts"],
+    "properties": {
+      "version": {"type": "string"},
+      "status": {"enum": ["firing", "resolved"]},
+      "alerts": {
+        "type": "array",
+        "items": {"type": "object"}
+      }
+    }
+  },
+  "documentation": "https://prometheus.io/docs/alerting/latest/configuration/#webhook_config",
+  "tags": ["prometheus", "alertmanager", "monitoring", "metrics", "alerts"]
+}

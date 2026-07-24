@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "description": "Registry of available EDA integrations",
+  "integrations": [
+    {
+      "id": "generic-webhook",
+      "file": "generic/webhook.json",
+      "enabled": true
+    },
+    {
+      "id": "prometheus-alertmanager",
+      "file": "monitoring/prometheus.json",
+      "enabled": true
+    },
+    {
+      "id": "servicenow-incident",
+      "file": "ticketing/servicenow.json",
+      "enabled": true
+    },
+    {
+      "id": "github-push",
+      "file": "scm/github.json",
+      "enabled": true
+    },
+    {
+      "id": "kafka-event",
+      "file": "messaging/kafka.json",
+      "enabled": true
+    },
+    {
+      "id": "splunk-itsi",
+      "file": "monitoring/splunk.json",
+      "enabled": true
+    },
+    {
+      "id": "solarwinds-alert",
+      "file": "monitoring/solarwinds.json",
+      "enabled": true
+    }
+  ]
+}
