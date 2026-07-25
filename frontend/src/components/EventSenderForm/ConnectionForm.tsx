@@ -1,5 +1,6 @@
 /**
  * Connection Form Component - URL and authentication inputs
+ * Supports both manual entry and AAP OAuth integration
  */
 
 import { useState } from 'react';
@@ -11,9 +12,13 @@ import {
   TextInput,
   InputGroup,
   InputGroupItem,
+  Divider,
+  Alert,
+  Button,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, CheckCircleIcon } from '@patternfly/react-icons';
 import { useAppContext } from '../../context/AppContext';
+import { EventStreamSelector } from './EventStreamSelector';
 
 function isValidUrl(url: string): boolean {
   if (!url) return false;
@@ -28,13 +33,77 @@ function isValidUrl(url: string): boolean {
 export function ConnectionForm() {
   const { state, dispatch } = useAppContext();
   const [urlTouched, setUrlTouched] = useState(false);
+  const [showManualEntry, setShowManualEntry] = useState(false);
 
+  const { aapSession } = state;
   const urlValid = isValidUrl(state.webhookUrl);
   const showUrlValidation = urlTouched && state.webhookUrl.length > 0;
   const urlValidated = showUrlValidation ? (urlValid ? 'success' : 'error') : 'default';
 
+  // Show manual entry if not authenticated or user toggled to manual mode
+  const displayManualForm = !aapSession.authenticated || showManualEntry;
+
   return (
     <div className="app-stack app-stack--lg">
+      {/* AAP OAuth Section */}
+      {aapSession.authenticated && !showManualEntry ? (
+        <>
+          <EventStreamSelector />
+
+          {state.selectedEventStream && (
+            <FormGroup
+              label="Event Stream URL"
+              fieldId="event-stream-url-display"
+            >
+              <TextInput
+                id="event-stream-url-display"
+                value={state.webhookUrl}
+                isReadOnly
+                aria-label="Selected event stream URL"
+              />
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    Events will be sent to this URL
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            </FormGroup>
+          )}
+
+          <FormGroup
+            label="Authentication Token"
+            fieldId="auth-token"
+          >
+            <TextInput
+              type="password"
+              id="auth-token"
+              name="auth-token"
+              value={state.authToken}
+              onChange={(_event, value) => dispatch({ type: 'UPDATE_AUTH_TOKEN', payload: value })}
+              placeholder="playground"
+              aria-label="Authentication bearer token"
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>
+                  Token for authenticating with the event stream (defaults to "playground")
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+
+          <Button
+            variant="link"
+            onClick={() => setShowManualEntry(true)}
+            style={{ padding: 0 }}
+          >
+            Use manual URL entry instead
+          </Button>
+        </>
+      ) : (
+        <>
+          {/* Manual URL Entry */}
       <FormGroup
         label="Event Stream URL"
         isRequired
@@ -100,6 +169,22 @@ export function ConnectionForm() {
           </HelperText>
         </FormHelperText>
       </FormGroup>
+
+      {/* Return to AAP mode button (if authenticated but in manual mode) */}
+      {aapSession.authenticated && showManualEntry && (
+        <>
+          <Divider style={{ margin: '1.5rem 0' }} />
+          <Button
+            variant="link"
+            onClick={() => setShowManualEntry(false)}
+            style={{ padding: 0 }}
+          >
+            Return to AAP event stream selection
+          </Button>
+        </>
+      )}
+        </>
+      )}
     </div>
   );
 }

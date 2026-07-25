@@ -17,6 +17,19 @@ const initialState: AppState = {
   sending: false,
   response: null,
   error: null,
+
+  // AAP Session
+  aapSession: {
+    authenticated: false,
+    aapBaseUrl: null,
+    user: null,
+    expiresAt: null,
+  },
+
+  // Event Streams
+  eventStreams: [],
+  selectedEventStream: null,
+  loadingEventStreams: false,
 };
 
 function appReducer(state: AppState, action: Action): AppState {
@@ -74,6 +87,58 @@ function appReducer(state: AppState, action: Action): AppState {
 
     case 'CLEAR_ERROR':
       return { ...state, error: null };
+
+    case 'SET_AAP_SESSION':
+      return { ...state, aapSession: action.payload };
+
+    case 'CLEAR_AAP_SESSION':
+      return {
+        ...state,
+        aapSession: {
+          authenticated: false,
+          aapBaseUrl: null,
+          user: null,
+          expiresAt: null,
+        },
+        eventStreams: [],
+        selectedEventStream: null,
+        // Also clear manually entered URL/token to avoid confusion
+        webhookUrl: '',
+        authToken: '',
+      };
+
+    case 'SET_EVENT_STREAMS':
+      return {
+        ...state,
+        eventStreams: action.payload,
+        loadingEventStreams: false,
+      };
+
+    case 'SELECT_EVENT_STREAM': {
+      const stream = action.payload;
+      return {
+        ...state,
+        selectedEventStream: stream,
+        // Auto-populate URL and token from event stream
+        webhookUrl: stream.url,
+        authToken: 'playground', // Hardcoded token value as per requirements
+        authType: 'bearer',
+        response: null,
+        error: null,
+      };
+    }
+
+    case 'LOADING_EVENT_STREAMS':
+      return { ...state, loadingEventStreams: action.payload };
+
+    case 'SET_AAP_HEALTH':
+      return {
+        ...state,
+        aapSession: {
+          ...state.aapSession,
+          healthy: action.payload,
+        },
+      };
 
     default:
       return state;
