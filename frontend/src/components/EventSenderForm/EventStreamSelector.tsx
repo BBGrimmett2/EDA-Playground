@@ -16,12 +16,14 @@ import {
   HelperText,
   HelperTextItem,
   Button,
+  Divider,
 } from '@patternfly/react-core';
-import { SyncAltIcon } from '@patternfly/react-icons';
+import { SyncAltIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import type { MenuToggleElement } from '@patternfly/react-core';
 import { useAppContext } from '../../context/AppContext';
 import { fetchEventStreams } from '../../services/aapApi';
 import type { AAPEventStream } from '../../types/integration';
+import { CreateEventStreamModal } from './CreateEventStreamModal';
 
 export function EventStreamSelector() {
   const { state, dispatch } = useAppContext();
@@ -29,6 +31,7 @@ export function EventStreamSelector() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Fetch event streams on mount
   useEffect(() => {
@@ -63,6 +66,13 @@ export function EventStreamSelector() {
   };
 
   const onSelect = (_event: React.MouseEvent<Element, MouseEvent> | undefined, selection: string | number | undefined) => {
+    // Handle "create new" action
+    if (selection === '__create_new__') {
+      setIsOpen(false);
+      setCreateModalOpen(true);
+      return;
+    }
+
     if (typeof selection === 'string') {
       const stream = eventStreams.find((s) => s.name === selection);
       if (stream) {
@@ -70,6 +80,11 @@ export function EventStreamSelector() {
       }
     }
     setIsOpen(false);
+  };
+
+  const handleCreateSuccess = () => {
+    // Refresh event streams list
+    loadStreams();
   };
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
@@ -106,51 +121,70 @@ export function EventStreamSelector() {
   }
 
   return (
-    <FormGroup
-      label="Event Stream"
-      labelIcon={
-        <Button
-          variant="plain"
-          onClick={loadStreams}
-          icon={<SyncAltIcon />}
-          aria-label="Refresh event streams"
-          isDisabled={loadingEventStreams}
-        />
-      }
-      isRequired
-      fieldId="event-stream-selector"
-    >
-      <Select
-        id="event-stream-selector"
-        isOpen={isOpen}
-        selected={selectedEventStream?.name}
-        onSelect={onSelect}
-        onOpenChange={(nextOpen) => setIsOpen(nextOpen)}
-        toggle={toggle}
-        shouldFocusToggleOnSelect
-        aria-label="Select an event stream"
+    <>
+      <FormGroup
+        isRequired
+        fieldId="event-stream-selector"
       >
-        <SelectList>
-          {eventStreams.map((stream: AAPEventStream) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--pf-v6-global--spacer--xs)' }}>
+          <label htmlFor="event-stream-selector" style={{ fontWeight: 'bold' }}>
+            Event Stream <span style={{ color: 'var(--pf-v6-global--danger-color--100)' }}>*</span>
+          </label>
+          <Button
+            variant="plain"
+            onClick={loadStreams}
+            icon={<SyncAltIcon />}
+            aria-label="Refresh event streams"
+            isDisabled={loadingEventStreams}
+            size="sm"
+          />
+        </div>
+        <Select
+          id="event-stream-selector"
+          isOpen={isOpen}
+          selected={selectedEventStream?.name}
+          onSelect={onSelect}
+          onOpenChange={(nextOpen) => setIsOpen(nextOpen)}
+          toggle={toggle}
+          shouldFocusToggleOnSelect
+          aria-label="Select an event stream"
+        >
+          <SelectList>
+            {eventStreams.map((stream: AAPEventStream) => (
+              <SelectOption
+                key={stream.id}
+                value={stream.name}
+                description={stream.description || `ID: ${stream.id}`}
+              >
+                {stream.name}
+              </SelectOption>
+            ))}
+            {eventStreams.length > 0 && <Divider />}
             <SelectOption
-              key={stream.id}
-              value={stream.name}
-              description={stream.description || `ID: ${stream.id}`}
+              key="create-new"
+              value="__create_new__"
+              icon={<PlusCircleIcon />}
             >
-              {stream.name}
+              Create new event stream
             </SelectOption>
-          ))}
-        </SelectList>
-      </Select>
-      <FormHelperText>
-        <HelperText>
-          <HelperTextItem>
-            {selectedEventStream
-              ? `URL: ${selectedEventStream.url}`
-              : `Choose from ${eventStreams.length} available event stream${eventStreams.length !== 1 ? 's' : ''}`}
-          </HelperTextItem>
-        </HelperText>
-      </FormHelperText>
-    </FormGroup>
+          </SelectList>
+        </Select>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              {selectedEventStream
+                ? `URL: ${selectedEventStream.url}`
+                : `Choose from ${eventStreams.length} available event stream${eventStreams.length !== 1 ? 's' : ''}`}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      </FormGroup>
+
+      <CreateEventStreamModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+    </>
   );
 }

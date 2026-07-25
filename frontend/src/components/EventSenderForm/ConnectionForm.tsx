@@ -13,7 +13,6 @@ import {
   InputGroup,
   InputGroupItem,
   Divider,
-  Alert,
   Button,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, CheckCircleIcon } from '@patternfly/react-icons';
@@ -40,9 +39,6 @@ export function ConnectionForm() {
   const showUrlValidation = urlTouched && state.webhookUrl.length > 0;
   const urlValidated = showUrlValidation ? (urlValid ? 'success' : 'error') : 'default';
 
-  // Show manual entry if not authenticated or user toggled to manual mode
-  const displayManualForm = !aapSession.authenticated || showManualEntry;
-
   return (
     <div className="app-stack app-stack--lg">
       {/* AAP OAuth Section */}
@@ -58,7 +54,7 @@ export function ConnectionForm() {
               <TextInput
                 id="event-stream-url-display"
                 value={state.webhookUrl}
-                isReadOnly
+                readOnly
                 aria-label="Selected event stream URL"
               />
               <FormHelperText>

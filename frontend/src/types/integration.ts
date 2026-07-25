@@ -50,6 +50,12 @@ export interface AAPEventStream {
   description?: string;
 }
 
+export interface AAPOrganization {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 export interface AAPSessionInfo {
   authenticated: boolean;
   aapBaseUrl: string | null;
@@ -77,6 +83,12 @@ export interface AppState {
   eventStreams: AAPEventStream[];
   selectedEventStream: AAPEventStream | null;
   loadingEventStreams: boolean;
+
+  // Organizations
+  organizations: AAPOrganization[];
+
+  // Event Stream Creation
+  creatingEventStream: boolean;
 }
 
 export type Action =
@@ -97,4 +109,8 @@ export type Action =
   | { type: 'SET_EVENT_STREAMS'; payload: AAPEventStream[] }
   | { type: 'SELECT_EVENT_STREAM'; payload: AAPEventStream }
   | { type: 'LOADING_EVENT_STREAMS'; payload: boolean }
-  | { type: 'SET_AAP_HEALTH'; payload: boolean };
+  | { type: 'SET_AAP_HEALTH'; payload: boolean }
+  | { type: 'SET_ORGANIZATIONS'; payload: AAPOrganization[] }
+  | { type: 'CREATE_EVENT_STREAM_START' }
+  | { type: 'CREATE_EVENT_STREAM_SUCCESS'; payload: AAPEventStream }
+  | { type: 'CREATE_EVENT_STREAM_FAILURE'; payload: string };

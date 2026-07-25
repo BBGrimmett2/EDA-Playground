@@ -30,6 +30,12 @@ const initialState: AppState = {
   eventStreams: [],
   selectedEventStream: null,
   loadingEventStreams: false,
+
+  // Organizations
+  organizations: [],
+
+  // Event Stream Creation
+  creatingEventStream: false,
 };
 
 function appReducer(state: AppState, action: Action): AppState {
@@ -138,6 +144,40 @@ function appReducer(state: AppState, action: Action): AppState {
           ...state.aapSession,
           healthy: action.payload,
         },
+      };
+
+    case 'SET_ORGANIZATIONS':
+      return {
+        ...state,
+        organizations: action.payload,
+      };
+
+    case 'CREATE_EVENT_STREAM_START':
+      return {
+        ...state,
+        creatingEventStream: true,
+        error: null,
+      };
+
+    case 'CREATE_EVENT_STREAM_SUCCESS': {
+      const newStream = action.payload;
+      return {
+        ...state,
+        creatingEventStream: false,
+        eventStreams: [...state.eventStreams, newStream],
+        selectedEventStream: newStream,
+        // Auto-populate URL and token from new stream
+        webhookUrl: newStream.url,
+        authToken: 'playground',
+        authType: 'bearer',
+      };
+    }
+
+    case 'CREATE_EVENT_STREAM_FAILURE':
+      return {
+        ...state,
+        creatingEventStream: false,
+        error: action.payload,
       };
 
     default:

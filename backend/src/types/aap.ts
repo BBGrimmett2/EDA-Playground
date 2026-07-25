@@ -48,3 +48,37 @@ export interface AAPEventStreamsResponse {
   previous: string | null;
   results: AAPEventStream[];
 }
+
+export interface AAPOrganization {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface AAPOrganizationsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: AAPOrganization[];
+}
+
+export interface AAPCredential {
+  id: number;
+  name: string;
+  description?: string;
+  inputs: {
+    auth_type: string;
+    http_header_key?: string;
+    token?: string;
+  };
+  managed: boolean;
+  credential_type_id: number;
+  organization_id: number;
+}
+
+export interface CreateEventStreamRequest {
+  name: string;
+  testMode: boolean;
+  token: string;
+  organizationId: number;
+}
