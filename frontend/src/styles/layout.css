@@ -118,3 +118,34 @@
 .app-inline--lg {
   gap: var(--app-space-md);
 }
+
+/* Responsive utility classes */
+@media (max-width: 768px) {
+  .app-hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .app-hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Better page section padding on mobile */
+@media (max-width: 768px) {
+  .pf-v6-c-page__main-section {
+    padding: var(--app-space-md);
+  }
+
+  .pf-v6-c-card__body {
+    padding: var(--app-space-md);
+  }
+}
+
+/* Ensure code editors are responsive */
+@media (max-width: 768px) {
+  .pf-v6-c-code-editor {
+    font-size: 0.75rem;
+  }
+}
