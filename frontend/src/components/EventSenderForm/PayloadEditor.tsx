@@ -31,7 +31,7 @@ export function PayloadEditor() {
       const formatted = JSON.stringify(parsed, null, 2);
       dispatch({ type: 'UPDATE_PAYLOAD', payload: formatted });
       setValidationError(null);
-    } catch (e) {
+    } catch {
       // Already showing validation error
     }
   };

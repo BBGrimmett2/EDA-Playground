@@ -32,17 +32,15 @@ RUN npm ci
 # Copy backend source
 COPY backend/ ./
 
-# Build TypeScript
-RUN npm run build
-
-# Install production dependencies only
-RUN npm ci --omit=dev
+# Build TypeScript and install production dependencies only
+RUN npm run build && \
+    npm ci --omit=dev
 
 # Stage 3: Production Image
 FROM node:20-alpine
 
 # Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+RUN apk add --no-cache dumb-init=1.2.5-r3
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
