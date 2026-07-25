@@ -24,6 +24,31 @@ import { AAPSession, CreateEventStreamRequest } from '../types/aap';
 const router = Router();
 
 /**
+ * GET /api/aap/auth/config
+ * Returns OAuth configuration needed by frontend
+ * These are public configuration values (not secrets)
+ */
+router.get('/auth/config', (_req: Request, res: Response) => {
+  const clientId = process.env.AAP_CLIENT_ID;
+  const redirectUri = process.env.AAP_REDIRECT_URI;
+  const baseUrl = process.env.AAP_BASE_URL;
+
+  if (!clientId || !redirectUri) {
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'OAuth configuration is not properly set. Check AAP_CLIENT_ID and AAP_REDIRECT_URI environment variables.',
+    });
+    return;
+  }
+
+  res.json({
+    clientId,
+    redirectUri,
+    baseUrl: baseUrl || null,
+  });
+});
+
+/**
  * POST /api/aap/auth/token
  * Exchange OAuth authorization code for access token
  */
@@ -231,11 +256,11 @@ router.post('/event-streams', requireAAPAuth(), async (req: Request, res: Respon
       return;
     }
 
-    // Validate name starts with "EDA Playground"
-    if (!name.startsWith('EDA Playground')) {
+    // Validate name starts with "EDA-Playground"
+    if (!name.startsWith('EDA-Playground')) {
       res.status(400).json({
         error: 'Bad Request',
-        message: 'Event stream name must start with "EDA Playground"',
+        message: 'Event stream name must start with "EDA-Playground"',
       });
       return;
     }
