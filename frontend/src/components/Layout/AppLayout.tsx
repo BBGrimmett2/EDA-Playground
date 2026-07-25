@@ -41,7 +41,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               fontWeight: 400,
               lineHeight: 1.2
             }}>
-              Development Tool
+              Playground
             </span>
           </div>
         </MastheadBrand>

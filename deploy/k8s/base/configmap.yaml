@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eda-playground-integrations
+  labels:
+    app: eda-playground
+    component: integrations
+data:
+  # Integration files are mounted at /app/integrations
+  # Override this ConfigMap to customize available integrations
+  # Files will be loaded from the backend/integrations directory during build
+  .keep: |
+    # Integration files are baked into the container image
+    # This ConfigMap can be used to override or add custom integrations
+    # by mounting specific files at /app/integrations/custom/

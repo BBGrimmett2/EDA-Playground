@@ -1,5 +1,5 @@
 /**
- * Event-Driven Ansible Development Tool - Backend Server
+ * EDA Playground - Backend Server
  */
 
 import express from 'express';
@@ -52,7 +52,7 @@ app.use(errorHandler);
 // Start server
 app.listen(PORT, () => {
   console.log('='.repeat(50));
-  console.log('🚀 EDA Development Tool - Backend Server');
+  console.log('🚀 EDA Playground - Backend Server');
   console.log('='.repeat(50));
   console.log(`Environment: ${NODE_ENV}`);
   console.log(`Port: ${PORT}`);

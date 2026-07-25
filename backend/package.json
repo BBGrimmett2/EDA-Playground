@@ -1,7 +1,7 @@
 {
-  "name": "eda-dev-tool-backend",
+  "name": "eda-playground-backend",
   "version": "1.0.0",
-  "description": "Backend API for Event-Driven Ansible Development Tool",
+  "description": "Backend API for EDA Playground",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
