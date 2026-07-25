@@ -1,0 +1,53 @@
+{
+  "id": "servicenow-incident",
+  "name": "ServiceNow Incident",
+  "category": "ticketing",
+  "description": "ServiceNow incident creation and update events via business rules or webhooks",
+  "authTypes": ["bearer", "none"],
+  "defaultAuthType": "bearer",
+  "examplePayload": {
+    "event_type": "incident.created",
+    "timestamp": "2026-07-24T14:30:00Z",
+    "incident": {
+      "sys_id": "abc123def456",
+      "number": "INC0010001",
+      "short_description": "Production database connection timeout",
+      "description": "Multiple users reporting inability to access the application. Database connection pool appears exhausted.",
+      "category": "Database",
+      "subcategory": "Connection Issues",
+      "priority": "1",
+      "urgency": "1",
+      "impact": "1",
+      "state": "New",
+      "assigned_to": {
+        "name": "DBA Team",
+        "email": "dba-team@example.com"
+      },
+      "opened_by": {
+        "name": "John Smith",
+        "email": "john.smith@example.com"
+      },
+      "opened_at": "2026-07-24T14:25:00Z",
+      "configuration_item": "PROD-DB-01",
+      "business_service": "Customer Portal"
+    },
+    "metadata": {
+      "source": "servicenow",
+      "instance": "https://company.service-now.com",
+      "correlation_id": "550e8400-e29b-41d4-a716-446655440000"
+    }
+  },
+  "payloadSchema": {
+    "type": "object",
+    "required": ["event_type", "incident"],
+    "properties": {
+      "event_type": {"enum": ["incident.created", "incident.updated", "incident.resolved", "incident.closed"]},
+      "incident": {
+        "type": "object",
+        "required": ["sys_id", "number", "short_description"]
+      }
+    }
+  },
+  "documentation": "https://docs.servicenow.com/bundle/tokyo-application-development/page/integrate/outbound-rest/concept/c_OutboundREST.html",
+  "tags": ["servicenow", "itsm", "incident", "ticketing", "snow"]
+}

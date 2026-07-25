@@ -1,0 +1,61 @@
+{
+  "id": "solarwinds-alert",
+  "name": "SolarWinds Alert",
+  "category": "monitoring",
+  "description": "SolarWinds monitoring alert events (following reference implementation pattern)",
+  "authTypes": ["bearer", "none"],
+  "defaultAuthType": "bearer",
+  "examplePayload": {
+    "alert_name": "High CPU Usage - Production Server",
+    "server_name": "prod-web-01.example.com",
+    "object_type": "Node",
+    "environment": "production",
+    "criticality_tier": "tier1",
+    "timestamp": "2026-07-24T14:30:00Z",
+    "status": "active",
+    "metric": {
+      "name": "CPULoad",
+      "current_value": 92.5,
+      "threshold": 85.0,
+      "unit": "percent"
+    },
+    "duration_minutes": 15,
+    "in_maintenance_window": false,
+    "corroboration": {
+      "related_alerts": [
+        {
+          "alert_name": "Memory Usage High",
+          "server_name": "prod-web-01.example.com"
+        }
+      ],
+      "correlation_score": 0.85
+    },
+    "context": {
+      "node_id": "12345",
+      "ip_address": "10.0.1.50",
+      "location": "us-east-1a",
+      "application": "Web Frontend",
+      "business_service": "Customer Portal"
+    },
+    "remediation": {
+      "runbook_url": "https://wiki.example.com/runbooks/high-cpu",
+      "recommended_actions": [
+        "Check for runaway processes",
+        "Review application logs",
+        "Consider scaling horizontally"
+      ]
+    }
+  },
+  "payloadSchema": {
+    "type": "object",
+    "required": ["alert_name", "server_name", "timestamp"],
+    "properties": {
+      "alert_name": {"type": "string"},
+      "server_name": {"type": "string"},
+      "status": {"enum": ["active", "cleared", "acknowledged"]},
+      "criticality_tier": {"enum": ["tier1", "tier2", "tier3"]}
+    }
+  },
+  "documentation": "https://documentation.solarwinds.com/en/success_center/orion/content/core-actions-alerts.htm",
+  "tags": ["solarwinds", "monitoring", "infrastructure", "npm", "network"]
+}

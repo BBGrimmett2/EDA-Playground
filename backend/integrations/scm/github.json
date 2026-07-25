@@ -1,0 +1,70 @@
+{
+  "id": "github-push",
+  "name": "GitHub Push Event",
+  "category": "scm",
+  "description": "GitHub webhook for push events to trigger deployments or CI/CD workflows",
+  "authTypes": ["hmac", "bearer", "none"],
+  "defaultAuthType": "hmac",
+  "examplePayload": {
+    "ref": "refs/heads/main",
+    "before": "a1b2c3d4e5f6789012345678901234567890abcd",
+    "after": "f1e2d3c4b5a6789012345678901234567890fedc",
+    "repository": {
+      "id": 123456789,
+      "name": "ansible-playbooks",
+      "full_name": "acme-corp/ansible-playbooks",
+      "private": false,
+      "owner": {
+        "name": "acme-corp",
+        "email": "devops@acme-corp.com",
+        "login": "acme-corp"
+      },
+      "html_url": "https://github.com/acme-corp/ansible-playbooks",
+      "description": "Infrastructure automation playbooks",
+      "default_branch": "main"
+    },
+    "pusher": {
+      "name": "jane-doe",
+      "email": "jane.doe@acme-corp.com"
+    },
+    "sender": {
+      "login": "jane-doe",
+      "id": 987654321,
+      "type": "User"
+    },
+    "created": false,
+    "deleted": false,
+    "forced": false,
+    "commits": [
+      {
+        "id": "f1e2d3c4b5a6789012345678901234567890fedc",
+        "message": "Add playbook for database backup automation",
+        "timestamp": "2026-07-24T14:30:00Z",
+        "author": {
+          "name": "Jane Doe",
+          "email": "jane.doe@acme-corp.com",
+          "username": "jane-doe"
+        },
+        "added": ["playbooks/database_backup.yml"],
+        "removed": [],
+        "modified": ["README.md"]
+      }
+    ],
+    "head_commit": {
+      "id": "f1e2d3c4b5a6789012345678901234567890fedc",
+      "message": "Add playbook for database backup automation",
+      "timestamp": "2026-07-24T14:30:00Z"
+    }
+  },
+  "payloadSchema": {
+    "type": "object",
+    "required": ["ref", "repository", "commits"],
+    "properties": {
+      "ref": {"type": "string", "pattern": "^refs/(heads|tags)/.+"},
+      "repository": {"type": "object"},
+      "commits": {"type": "array"}
+    }
+  },
+  "documentation": "https://docs.github.com/en/webhooks/webhook-events-and-payloads#push",
+  "tags": ["github", "scm", "git", "push", "deployment", "cicd"]
+}

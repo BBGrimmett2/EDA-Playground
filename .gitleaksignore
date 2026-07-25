@@ -1,0 +1,10 @@
+# Gitleaks ignore file
+# Add patterns for false positives
+
+# Example payloads in integration definitions (not real secrets)
+backend/integrations/**/*.json
+
+# Test fixtures
+**/*.test.ts
+**/*.spec.ts
+**/fixtures/**

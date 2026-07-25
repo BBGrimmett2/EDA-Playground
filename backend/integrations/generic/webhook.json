@@ -1,0 +1,38 @@
+{
+  "id": "generic-webhook",
+  "name": "Generic Webhook",
+  "category": "generic",
+  "description": "Generic webhook event with customizable payload structure",
+  "authTypes": ["bearer", "none"],
+  "defaultAuthType": "bearer",
+  "examplePayload": {
+    "event_type": "alert",
+    "severity": "warning",
+    "timestamp": "2026-07-24T14:30:00Z",
+    "source": "monitoring-system",
+    "message": "Service health check failed",
+    "details": {
+      "service_name": "api-gateway",
+      "endpoint": "https://api.example.com/health",
+      "status_code": 503,
+      "response_time_ms": 5000
+    },
+    "metadata": {
+      "environment": "production",
+      "region": "us-east-1",
+      "tags": ["critical", "infrastructure"]
+    }
+  },
+  "payloadSchema": {
+    "type": "object",
+    "properties": {
+      "event_type": {"type": "string"},
+      "severity": {"enum": ["info", "warning", "error", "critical"]},
+      "timestamp": {"type": "string", "format": "date-time"},
+      "message": {"type": "string"}
+    },
+    "required": ["event_type", "message"]
+  },
+  "documentation": "https://docs.ansible.com/ansible/latest/collections/ansible/eda/webhook_module.html",
+  "tags": ["webhook", "generic", "customizable", "testing"]
+}
