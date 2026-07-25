@@ -1,202 +1,148 @@
 # EDA Playground
 
-A web-based playground for developing and testing Event-Driven Ansible (EDA) integrations. Select from common event sources, edit JSON payloads, and send test events to EDA webhooks with a single click.
+**A web-based development tool for testing Event-Driven Ansible integrations**
+
+Send realistic test events to your EDA webhooks without writing code. Select from pre-built integration templates, customize JSON payloads, and validate your automation workflows—all from a browser.
 
 ![Status](https://img.shields.io/badge/status-mvp-green)
 ![License](https://img.shields.io/badge/license-Apache_2.0-blue)
 [![Container](https://img.shields.io/badge/container-ghcr.io-blue)](https://github.com/BBGrimmett2/EDA-Playground/pkgs/container/eda-playground)
 
-## Overview
+---
 
-This tool simplifies EDA plugin development by providing:
+## Why EDA Playground?
 
-- **Pre-loaded Integration Library**: 7+ common event sources (Prometheus, ServiceNow, GitHub, Kafka, Splunk, SolarWinds)
-- **Monaco Code Editor**: Syntax highlighting and validation for JSON payloads
-- **PatternFly UI**: Familiar Ansible Automation Platform look and feel
-- **Direct Webhook Testing**: Send events to EDA event streams with Bearer token auth
-- **Extensible**: Easy-to-add new integrations via JSON definitions
-
-## Architecture
-
-```
-React Frontend (PatternFly) ──> Express Backend ──> EDA Event Stream
-                                      │
-                                      └──> Integration Library (JSON)
-```
-
-**Technology Stack:**
-- Frontend: React 18 + TypeScript + PatternFly 5/6
-- Backend: Node.js 18+ + Express + TypeScript
-- Deployment: OpenShift/MicroShift with Docker
-- Integration Definitions: JSON with JSON Schema validation
-
-## Project Status
-
-**MVP Complete** ✅
-
-**Phase 1: Foundation** ✅ Complete
-- Project structure created
-- Integration schema defined
-- 7 core integrations implemented
-- Validation tooling in place
-
-**Phase 2: Backend Implementation** ✅ Complete
-- Express API server with proxy endpoint
-- Integration loader service
-- REST endpoints for integrations
-- CORS and error handling
-
-**Phase 3: Frontend Implementation** ✅ Complete
-- React + TypeScript + PatternFly UI
-- Monaco code editor for JSON payloads
-- State management with Context API
-- Real-time validation and formatting
-
-**Phase 4: Integration & Testing** ✅ Complete
-- Proxy for CORS bypass
-- Bearer token authentication
-- End-to-end webhook testing
-- Responsive layout
-
-**Phase 5: Deployment** ✅ Complete
-- Multi-stage Dockerfile
-- GitHub Actions CI/CD
-- OpenShift/Kubernetes manifests
-- Comprehensive deployment documentation
-
-## Quick Start
-
-### Option 1: Docker Compose (Easiest for Local Testing)
-
-```bash
-cd deploy/compose
-cp .env.example .env
-docker-compose up -d
-
-# Open http://localhost:8080
-```
-
-### Option 2: Deploy to OpenShift/MicroShift
-
-```bash
-# Deploy using Kustomize
-oc new-project eda-playground
-oc apply -k deploy/k8s/ocp/
-
-# Get the route URL
-oc get route eda-playground -o jsonpath='{.spec.host}'
-```
-
-### Option 3: Deploy to Kubernetes
-
-```bash
-kubectl create namespace eda-playground
-kubectl apply -k deploy/k8s/overlays/kubernetes/
-```
-
-See [docs/deployment-guide.md](docs/deployment-guide.md) for detailed deployment instructions.
-
-### Option 3: Development Mode
-
-**Backend:**
-```bash
-cd backend
-npm install
-npm run validate-integrations  # Validate all integration definitions
-npm run dev                     # Start on http://localhost:3001
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev                     # Start on http://localhost:5173
-```
-
-### Available Integrations
-
-| Integration | Category | Description |
-|------------|----------|-------------|
-| Generic Webhook | generic | Customizable webhook for testing |
-| Prometheus Alertmanager | monitoring | Alert notifications with firing/resolved status |
-| ServiceNow Incident | ticketing | ITSM incident events |
-| GitHub Push Event | scm | Git push webhooks for CI/CD |
-| Kafka Event Message | messaging | Event streaming messages |
-| Splunk ITSI | monitoring | IT Service Intelligence notable events |
-| SolarWinds Alert | monitoring | Infrastructure monitoring alerts |
-
-## Usage
-
-1. **Select an Integration**: Choose from pre-loaded event sources in the dropdown
-2. **Edit Payload**: Modify the JSON payload using the Monaco editor
-3. **Configure Connection**: Enter your EDA event stream URL and authentication token
-4. **Send Event**: Click "Send Event" to POST to the webhook
-5. **View Response**: Check the response status and body
-
-## Container Images
-
-Container images are automatically built and published to GitHub Container Registry on every push to `main`:
-
-```bash
-# Pull latest
-docker pull ghcr.io/bbgrimmett2/eda-playground:latest
-
-# Pull specific version
-docker pull ghcr.io/bbgrimmett2/eda-playground:v1.0.0
-```
-
-**Available Tags:**
-- `latest` - Latest build from main branch
-- `main-<SHA>` - Specific commit
-- `devel` - Development branch
-- `v*.*.*` - Semantic version releases
-
-## Adding New Integrations
-
-**Quick steps:**
-
-1. Create integration file: `backend/integrations/<category>/<id>.json`
-2. Follow the schema in `backend/integrations/schema.json`
-3. Add entry to `backend/integrations/index.json`
-4. Run `npm run validate-integrations`
-5. Rebuild container or restart dev server
-
-Example integration structure:
-```json
-{
-  "id": "my-integration",
-  "name": "My Integration",
-  "category": "monitoring",
-  "description": "Description of the integration",
-  "authTypes": ["bearer", "none"],
-  "defaultAuthType": "bearer",
-  "examplePayload": {
-    "event_type": "alert",
-    "message": "Example event"
-  }
-}
-```
-
-## Contributing
-
-This project follows the Ansible Code of Conduct and uses automated workflows to maintain code quality.
-
-**Pull Request Guidelines:**
-- PRs must have a descriptive title (max 72 characters) and description
-- Follow [Conventional Commits](https://www.conventionalcommits.org/) format
-- Automated checks will run for linting, security, and PR metadata
-- See [PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) for the checklist
-
-**Workflows:**
-- **Build Container** - Builds and publishes multi-arch images to ghcr.io
-- **PR Checks** - Validates PR metadata, size, and conflicts
-- **Lint** - Runs YAML, Markdown, TypeScript, Dockerfile, and K8s manifest linting
-- **Commit Lint** - Enforces conventional commit format
-
-## License
-
-Apache License 2.0
+Developing Event-Driven Ansible integrations requires repeatedly sending test events to validate rulebook logic. Instead of:
+- Manually crafting JSON payloads from documentation
+- Writing scripts to simulate webhook calls
+- Configuring authentication for each test
 
 ---
 
-**Built with ❤️ for the Ansible community**
+## Features
+
+<!-- I would like to add the OAuth to AAP in this as well -->
+- **Integration Library**: Prometheus, ServiceNow, GitHub, Kafka, Splunk, SolarWinds, and more
+- **Live Editing**: Modify JSON payloads with real-time validation
+- **Direct Testing**: Send events directly to EDA event stream webhooks
+- **Response Viewing**: See exactly what your webhook returns
+- **Extensible**: Add custom integrations via JSON configuration
+- **Container-Ready**: Deploy to OpenShift, Kubernetes, or run locally with Docker
+
+## Quick Start
+
+**Run locally with Docker Compose:**
+```bash
+cd deploy/compose
+docker-compose up -d
+# Open http://localhost:8080
+```
+
+**Deploy to OpenShift/MicroShift:**
+```bash
+oc new-project eda-playground
+oc apply -k deploy/k8s/ocp/
+oc get route eda-playground  # Get your URL
+```
+
+**Use the pre-built container:**
+```bash
+docker pull ghcr.io/bbgrimmett2/eda-playground:latest
+docker run -p 8080:8080 ghcr.io/bbgrimmett2/eda-playground:latest
+```
+
+📖 **Detailed instructions:** [Deployment Guide](docs/deployment-guide.md) | [Deploy Directory](deploy/README.md)
+
+---
+
+## How It Works
+
+1. **Select an Integration** → Choose from 7+ pre-configured event sources
+2. **Edit the Payload** → Customize JSON in the Monaco editor
+3. **Enter Webhook Details** → Paste your EDA event stream URL and auth token
+4. **Send & Validate** → Click "Send Event" and view the response
+
+---
+
+## Available Integrations
+
+| Integration | Category | Example Use Case |
+|------------|----------|------------------|
+| **Prometheus Alertmanager** | Monitoring | Test alert firing/resolved webhooks |
+| **ServiceNow Incident** | Ticketing | Validate ITSM incident creation |
+| **GitHub Push Event** | SCM | Simulate CI/CD pipeline triggers |
+| **Kafka Event Message** | Messaging | Test event stream processing |
+| **Splunk ITSI** | Monitoring | IT service intelligence events |
+| **SolarWinds Alert** | Monitoring | Infrastructure monitoring alerts |
+| **Generic Webhook** | Generic | Customizable for any event type |
+
+**Want to add more?** See [Adding Integrations](#adding-integrations)
+
+---
+
+## Adding Integrations
+
+Create a new integration in 3 steps:
+
+1. **Create JSON file**: `backend/integrations/<category>/<integration-id>.json`
+2. **Define the structure**:
+   ```json
+   {
+     "id": "datadog-alert",
+     "name": "Datadog Alert",
+     "category": "monitoring",
+     "authTypes": ["bearer"],
+     "examplePayload": { /* your example event */ }
+   }
+   ```
+3. **Validate & test**:
+   ```bash
+   cd backend
+   npm run validate-integrations
+   npm run dev  # Test locally
+   ```
+
+**Full guide:** Check the integration schema in `backend/integrations/schema.json`
+
+---
+
+## Development
+
+**Run locally:**
+```bash
+# Backend
+cd backend && npm install && npm run dev
+
+# Frontend
+cd frontend && npm install && npm run dev
+```
+
+**Stack:**
+- Frontend: React 18 + TypeScript + PatternFly 6
+- Backend: Node.js 20 + Express + TypeScript
+- Container: Multi-arch (amd64/arm64) Docker image
+- Deployment: Kubernetes/OpenShift via Kustomize
+
+---
+
+## Contributing
+
+Contributions welcome! This project follows the [Ansible Code of Conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html).
+
+**Guidelines:**
+- Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, etc.)
+- PRs require passing CI checks (linting, security, build validation)
+- See [PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md)
+
+---
+
+## Documentation
+
+- [Deployment Guide](docs/deployment-guide.md) - OpenShift, Kubernetes, Docker
+- [Deploy Directory](deploy/README.md) - Manifest overview
+
+---
+
+## License
+
+Apache License 2.0 - See [LICENSE](LICENSE) for details.
