@@ -88,11 +88,42 @@ Create a new integration in 3 steps:
 2. **Define the structure**:
    ```json
    {
-     "id": "datadog-alert",
-     "name": "Datadog Alert",
+     "id": "monitoring-alert",
+     "name": "Monitoring Alert System",
      "category": "monitoring",
-     "authTypes": ["bearer"],
-     "examplePayload": { /* your example event */ }
+     "description": "Generic monitoring system webhook for infrastructure alerts",
+     "authTypes": ["bearer", "hmac", "none"],
+     "defaultAuthType": "bearer",
+     "examplePayload": {
+       "alert_id": "alert_12345",
+       "status": "firing",
+       "severity": "critical",
+       "timestamp": "2026-07-24T14:30:00Z",
+       "source": {
+         "name": "web-server-01",
+         "region": "us-east-1",
+         "environment": "production"
+       },
+       "metric": {
+         "name": "cpu_usage_percent",
+         "value": 95.8,
+         "threshold": 90
+       },
+       "message": "CPU usage exceeded threshold on web-server-01",
+       "runbook_url": "https://runbooks.example.com/high-cpu",
+       "tags": ["infrastructure", "compute", "performance"]
+     },
+     "payloadSchema": {
+       "type": "object",
+       "required": ["alert_id", "status", "severity"],
+       "properties": {
+         "alert_id": { "type": "string" },
+         "status": { "enum": ["firing", "resolved"] },
+         "severity": { "enum": ["info", "warning", "critical"] }
+       }
+     },
+     "documentation": "https://docs.example.com/webhooks/alerts",
+     "tags": ["monitoring", "alerts", "infrastructure", "generic"]
    }
    ```
 3. **Validate & test**:
