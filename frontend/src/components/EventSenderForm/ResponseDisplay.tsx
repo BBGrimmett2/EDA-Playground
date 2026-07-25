@@ -2,7 +2,18 @@
  * Response Display Component
  */
 
-import { Alert, FormGroup, DescriptionList, DescriptionListGroup, DescriptionListTerm, DescriptionListDescription } from '@patternfly/react-core';
+import {
+  Alert,
+  AlertActionCloseButton,
+  FormGroup,
+  DescriptionList,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  DescriptionListDescription,
+  Card,
+  CardBody,
+  Title,
+} from '@patternfly/react-core';
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import { useAppContext } from '../../context/AppContext';
 
@@ -41,17 +52,27 @@ function formatResponseBody(data: any): string {
 }
 
 export function ResponseDisplay() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
 
   if (state.error) {
     return (
-      <Alert
-        variant="danger"
-        title="Request Failed"
-        isInline
-      >
-        {state.error}
-      </Alert>
+      <Card>
+        <CardBody>
+          <Alert
+            variant="danger"
+            title="Request Failed"
+            isInline
+            actionClose={
+              <AlertActionCloseButton
+                onClose={() => dispatch({ type: 'CLEAR_ERROR' })}
+                aria-label="Close error alert"
+              />
+            }
+          >
+            {state.error}
+          </Alert>
+        </CardBody>
+      </Card>
     );
   }
 
@@ -61,45 +82,61 @@ export function ResponseDisplay() {
 
   const { response } = state;
   const variant = response.success ? 'success' : 'warning';
-  const title = response.success ? 'Success' : 'Request Completed with Errors';
+  const title = response.success ? 'Event Sent Successfully' : 'Request Completed with Errors';
 
   return (
-    <>
-      <Alert
-        variant={variant}
-        title={title}
-        isInline
-      >
-        <DescriptionList isHorizontal isCompact>
-          <DescriptionListGroup>
-            <DescriptionListTerm>Status</DescriptionListTerm>
-            <DescriptionListDescription>
-              {response.statusCode} {response.statusText}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>Duration</DescriptionListTerm>
-            <DescriptionListDescription>
-              {response.duration}ms
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </Alert>
+    <Card>
+      <CardBody>
+        <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--app-space-lg)' }}>
+          Response
+        </Title>
 
-      <FormGroup label="Response Body" fieldId="response-body">
-        <CodeEditor
-          code={formatResponseBody(response.data)}
-          language={Language.json}
-          isReadOnly
-          height="300px"
-          options={{
-            minimap: { enabled: false },
-            lineNumbers: 'on',
-            scrollBeyondLastLine: false,
-            wordWrap: 'on',
-          }}
-        />
-      </FormGroup>
-    </>
+        <div className="app-stack app-stack--lg">
+          <Alert
+            variant={variant}
+            title={title}
+            isInline
+            actionClose={
+              <AlertActionCloseButton
+                onClose={() => dispatch({ type: 'SEND_REQUEST_SUCCESS', payload: null as any })}
+                aria-label="Close response alert"
+              />
+            }
+          >
+            <DescriptionList isHorizontal isCompact>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Status</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <strong>{response.statusCode}</strong> {response.statusText}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+              <DescriptionListGroup>
+                <DescriptionListTerm>Duration</DescriptionListTerm>
+                <DescriptionListDescription>
+                  <strong>{response.duration}ms</strong>
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            </DescriptionList>
+          </Alert>
+
+          <FormGroup label="Response Body" fieldId="response-body">
+            <CodeEditor
+              code={formatResponseBody(response.data)}
+              language={Language.json}
+              isReadOnly
+              height="300px"
+              options={{
+                minimap: { enabled: false },
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                readOnly: true,
+              }}
+              aria-label="Response body viewer"
+            />
+          </FormGroup>
+        </div>
+      </CardBody>
+    </Card>
   );
 }

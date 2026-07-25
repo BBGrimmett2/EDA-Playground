@@ -3,7 +3,17 @@
  */
 
 import { useState } from 'react';
-import { FormGroup, FormHelperText, HelperText, HelperTextItem, Alert, Button, Flex, FlexItem } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Alert,
+  Button,
+  Flex,
+  FlexItem,
+  Title,
+} from '@patternfly/react-core';
 import { CodeEditor, Language } from '@patternfly/react-code-editor';
 import { useAppContext } from '../../context/AppContext';
 
@@ -37,58 +47,72 @@ export function PayloadEditor() {
   };
 
   return (
-    <FormGroup
-      label="Event Payload"
-      isRequired
-      fieldId="payload-editor"
-    >
-      <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
-        <FlexItem>
-          <Button
-            variant="secondary"
-            onClick={handleFormat}
-            isDisabled={!state.payload || !!validationError}
-            size="sm"
-          >
-            Format JSON
-          </Button>
-        </FlexItem>
-        <FlexItem>
-          <CodeEditor
-            code={state.payload}
-            onChange={handleEditorChange}
-            language={Language.json}
-            height="500px"
-            width="100%"
-            options={{
-              minimap: { enabled: false },
-              lineNumbers: 'on',
-              formatOnPaste: true,
-              formatOnType: true,
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-              automaticLayout: true,
-            }}
-          />
-        </FlexItem>
-        {validationError && (
+    <>
+      <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--app-space-lg)' }}>
+        Event Payload
+      </Title>
+      <FormGroup
+        isRequired
+        fieldId="payload-editor"
+      >
+        <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
           <FlexItem>
-            <Alert
-              variant="danger"
-              title="Invalid JSON"
-              isInline
-              isPlain
-            >
-              {validationError}
-            </Alert>
+            <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+              <FlexItem>
+                <Button
+                  variant="secondary"
+                  onClick={handleFormat}
+                  isDisabled={!state.payload || !!validationError}
+                  size="sm"
+                >
+                  Format JSON
+                </Button>
+              </FlexItem>
+            </Flex>
           </FlexItem>
-        )}
-      </Flex>
-      <FormHelperText>
-        <HelperText>
-          <HelperTextItem>Edit the JSON payload to customize the event data</HelperTextItem>
-        </HelperText>
-      </FormHelperText>
-    </FormGroup>
+          <FlexItem>
+            <CodeEditor
+              code={state.payload}
+              onChange={handleEditorChange}
+              language={Language.json}
+              height="500px"
+              width="100%"
+              options={{
+                minimap: { enabled: false },
+                lineNumbers: 'on',
+                formatOnPaste: true,
+                formatOnType: true,
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                automaticLayout: true,
+                tabSize: 2,
+              }}
+              aria-label="JSON payload editor"
+            />
+          </FlexItem>
+          {validationError && (
+            <FlexItem>
+              <Alert
+                variant="danger"
+                title="Invalid JSON"
+                isInline
+                isPlain
+              >
+                {validationError}
+              </Alert>
+            </FlexItem>
+          )}
+        </Flex>
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem>
+              {validationError
+                ? 'Fix the JSON syntax errors above before sending'
+                : 'Edit the JSON payload to customize the event data for your test'}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      </FormGroup>
+    </>
   );
 }

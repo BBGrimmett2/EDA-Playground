@@ -9,7 +9,13 @@ import {
   Alert,
   PageSection,
   Title,
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateBody,
+  AlertActionCloseButton,
 } from '@patternfly/react-core';
+import { CubesIcon } from '@patternfly/react-icons';
 import { useAppContext } from '../../context/AppContext';
 import { fetchIntegrations } from '../../services/api';
 import { IntegrationSelector } from './IntegrationSelector';
@@ -40,7 +46,7 @@ export function EventSenderForm() {
     return (
       <PageSection>
         <div style={{ textAlign: 'center', padding: 'var(--app-space-2xl)' }}>
-          <Spinner size="xl" />
+          <Spinner size="xl" aria-label="Loading integrations" />
           <div style={{ marginTop: 'var(--app-space-md)' }}>
             <Title headingLevel="h2" size="lg">Loading integrations...</Title>
           </div>
@@ -52,7 +58,12 @@ export function EventSenderForm() {
   if (state.error && state.integrations.length === 0) {
     return (
       <PageSection>
-        <Alert variant="danger" title="Failed to load integrations" isInline>
+        <Alert
+          variant="danger"
+          title="Failed to load integrations"
+          isInline
+          actionClose={<AlertActionCloseButton onClose={() => dispatch({ type: 'CLEAR_ERROR' })} />}
+        >
           {state.error}
         </Alert>
       </PageSection>
@@ -81,15 +92,54 @@ export function EventSenderForm() {
 
         <Form style={{ width: '100%' }}>
           <div className="app-stack app-stack--lg">
-            <IntegrationSelector />
+            {/* Integration Selection Card */}
+            <Card>
+              <CardBody>
+                <IntegrationSelector />
+              </CardBody>
+            </Card>
 
-            {state.selectedIntegration && (
+            {state.selectedIntegration ? (
               <>
-                <PayloadEditor />
-                <ConnectionForm />
+                {/* Payload Editor Card */}
+                <Card>
+                  <CardBody>
+                    <PayloadEditor />
+                  </CardBody>
+                </Card>
+
+                {/* Connection Configuration Card */}
+                <Card>
+                  <CardBody>
+                    <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--app-space-lg)' }}>
+                      Connection Configuration
+                    </Title>
+                    <ConnectionForm />
+                  </CardBody>
+                </Card>
+
+                {/* Action Buttons */}
                 <ActionButtons />
+
+                {/* Response Display */}
                 <ResponseDisplay />
               </>
+            ) : (
+              /* Empty State when no integration selected */
+              <Card>
+                <CardBody>
+                  <EmptyState variant="full">
+                    <CubesIcon style={{ fontSize: '4rem', color: 'var(--pf-v6-global--Color--200)', marginBottom: 'var(--app-space-md)' }} />
+                    <Title headingLevel="h2" size="lg">
+                      Select an integration to begin
+                    </Title>
+                    <EmptyStateBody>
+                      Choose an event source integration from the dropdown above to load its example payload
+                      and start testing your Event-Driven Ansible webhook endpoint.
+                    </EmptyStateBody>
+                  </EmptyState>
+                </CardBody>
+              </Card>
             )}
           </div>
         </Form>

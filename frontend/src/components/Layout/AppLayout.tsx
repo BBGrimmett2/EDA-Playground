@@ -25,7 +25,8 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.125rem'
+            gap: '0.125rem',
+            padding: 'var(--app-space-xs) 0'
           }}>
             <span style={{
               color: '#ffffff',
@@ -50,8 +51,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   );
 
   return (
-    <Page masthead={masthead}>
-      <PageSection>
+    <Page masthead={masthead} role="main">
+      <PageSection isFilled>
         {children}
       </PageSection>
     </Page>

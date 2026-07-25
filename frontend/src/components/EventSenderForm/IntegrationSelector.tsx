@@ -14,7 +14,12 @@ import {
   SelectList,
   SelectOption,
   SelectGroup,
+  Label,
+  Flex,
+  FlexItem,
+  Button,
 } from '@patternfly/react-core';
+import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import type { MenuToggleElement } from '@patternfly/react-core';
 import { useAppContext } from '../../context/AppContext';
 import type { Integration } from '../../types/integration';
@@ -72,50 +77,104 @@ export function IntegrationSelector() {
   );
 
   return (
-    <FormGroup
-      label="Integration"
-      isRequired
-      fieldId="integration-selector"
-      style={{ marginBottom: 'var(--pf-v6-global--spacer--lg)' }}
-    >
-      <Select
-        id="integration-selector"
-        isOpen={isOpen}
-        selected={state.selectedIntegration?.id}
-        onSelect={onSelect}
-        onOpenChange={(nextOpen) => setIsOpen(nextOpen)}
-        toggle={toggle}
-        shouldFocusToggleOnSelect
-        aria-label="Select an integration"
+    <>
+      <FormGroup
+        label="Integration"
+        isRequired
+        fieldId="integration-selector"
       >
-        <SelectList>
-          {sortedCategories.map(([category, integrations]) => (
-            <SelectGroup
-              key={category}
-              label={categoryLabels[category] || category}
-            >
-              {integrations.map(integration => (
-                <SelectOption
-                  key={integration.id}
-                  value={integration.id}
-                  description={integration.description}
+        <Select
+          id="integration-selector"
+          isOpen={isOpen}
+          selected={state.selectedIntegration?.id}
+          onSelect={onSelect}
+          onOpenChange={(nextOpen) => setIsOpen(nextOpen)}
+          toggle={toggle}
+          shouldFocusToggleOnSelect
+          aria-label="Select an integration"
+        >
+          <SelectList>
+            {sortedCategories.map(([category, integrations]) => (
+              <SelectGroup
+                key={category}
+                label={categoryLabels[category] || category}
+              >
+                {integrations.map(integration => (
+                  <SelectOption
+                    key={integration.id}
+                    value={integration.id}
+                    description={integration.description}
+                  >
+                    {integration.name}
+                  </SelectOption>
+                ))}
+              </SelectGroup>
+            ))}
+          </SelectList>
+        </Select>
+        {!isOpen && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem>
+                Select an event source integration to load its example payload
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
+      </FormGroup>
+
+      {/* Selected Integration Metadata */}
+      {state.selectedIntegration && (
+        <div style={{
+          marginTop: 'var(--app-space-lg)',
+          padding: 'var(--app-space-md)',
+          backgroundColor: 'var(--pf-v6-global--BackgroundColor--200)',
+          borderRadius: 'var(--pf-v6-global--BorderRadius--sm)',
+          border: '1px solid var(--pf-v6-global--BorderColor--100)'
+        }}>
+          <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
+            <FlexItem>
+              <Flex spaceItems={{ default: 'spaceItemsSm' }} alignItems={{ default: 'alignItemsCenter' }}>
+                <FlexItem>
+                  <Label color="blue">{categoryLabels[state.selectedIntegration.category] || state.selectedIntegration.category}</Label>
+                </FlexItem>
+                {state.selectedIntegration.tags?.map((tag) => (
+                  <FlexItem key={tag}>
+                    <Label color="grey">{tag}</Label>
+                  </FlexItem>
+                ))}
+              </Flex>
+            </FlexItem>
+            {state.selectedIntegration.description && (
+              <FlexItem>
+                <p style={{
+                  margin: 0,
+                  fontSize: 'var(--pf-v6-global--FontSize--sm)',
+                  color: 'var(--pf-v6-global--Color--200)'
+                }}>
+                  {state.selectedIntegration.description}
+                </p>
+              </FlexItem>
+            )}
+            {state.selectedIntegration.documentation && (
+              <FlexItem>
+                <Button
+                  variant="link"
+                  isInline
+                  icon={<ExternalLinkAltIcon />}
+                  iconPosition="end"
+                  component="a"
+                  href={state.selectedIntegration.documentation}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  {integration.name}
-                </SelectOption>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectList>
-      </Select>
-      {!isOpen && (
-        <FormHelperText>
-          <HelperText>
-            <HelperTextItem>
-              Select an event source integration to load its example payload
-            </HelperTextItem>
-          </HelperText>
-        </FormHelperText>
+                  View documentation
+                </Button>
+              </FlexItem>
+            )}
+          </Flex>
+        </div>
       )}
-    </FormGroup>
+    </>
   );
 }
