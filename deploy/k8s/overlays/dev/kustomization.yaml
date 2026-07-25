@@ -8,7 +8,9 @@ metadata:
 namespace: eda-playground
 
 resources:
+  - namespace.yaml
   - ../../base
+  - route.yaml
 
 patches:
   - path: patch-dev-env.yaml

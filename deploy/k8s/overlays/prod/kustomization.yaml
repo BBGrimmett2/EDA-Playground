@@ -3,15 +3,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 metadata:
-  name: eda-playground-openshift
+  name: eda-playground-prod
 
 namespace: eda-playground
 
 resources:
+  - namespace.yaml
   - ../../base
   - route.yaml
 
-labels:
-  - pairs:
-      app.kubernetes.io/instance: eda-playground
-      app.kubernetes.io/version: "1.0.0"
+patches:
+  - path: patch-prod.yaml
+    target:
+      kind: Deployment
+      name: eda-playground

@@ -7,24 +7,21 @@ This directory contains deployment configurations for different environments.
 ```
 deploy/
 ├── k8s/                    # Kubernetes/OpenShift manifests
-│   ├── base/              # Base resources (all platforms)
+│   ├── base/              # Base resources (environment-agnostic)
 │   │   ├── configmap.yaml
 │   │   ├── deployment.yaml
 │   │   ├── service.yaml
 │   │   └── kustomization.yaml
-│   ├── ocp/               # OpenShift/MicroShift (short path)
-│   │   ├── namespace.yaml
-│   │   ├── route.yaml
-│   │   └── kustomization.yaml
 │   └── overlays/
-│       ├── dev/           # Dev/test with self-signed certs
+│       ├── dev/           # Development/test environment
+│       │   ├── namespace.yaml
+│       │   ├── route.yaml
 │       │   ├── patch-dev-env.yaml
 │       │   └── kustomization.yaml
-│       ├── openshift/     # OpenShift (alternative path)
-│       │   ├── route.yaml
-│       │   └── kustomization.yaml
-│       └── kubernetes/    # Vanilla K8s (Ingress)
-│           ├── ingress.yaml
+│       └── prod/          # Production environment
+│           ├── namespace.yaml
+│           ├── route.yaml
+│           ├── patch-prod.yaml
 │           └── kustomization.yaml
 ├── compose/               # Docker Compose for local testing
 │   ├── docker-compose.yml
@@ -68,42 +65,29 @@ docker-compose up -d --build
 
 **Production deployment:**
 ```bash
-# Create project
-oc new-project eda-playground
-
-# Deploy using Kustomize (short path)
-oc apply -k deploy/k8s/ocp/
+# Deploy production configuration
+oc apply -k deploy/k8s/overlays/prod/
 
 # Get the route
-oc get route eda-playground -o jsonpath='{.spec.host}'
+oc get route eda-playground -n eda-playground -o jsonpath='{.spec.host}'
 ```
 
-**Dev/Test deployment (with self-signed certificates):**
+**Development/Test deployment:**
 
-If your AAP instance uses self-signed certificates, use the dev overlay:
+For dev/test environments with self-signed AAP certificates:
 
 ```bash
-# Deploy with self-signed cert support
+# Deploy development configuration
 oc apply -k deploy/k8s/overlays/dev/
 
 # Get the route
-oc get route eda-playground -o jsonpath='{.spec.host}'
+oc get route eda-playground -n eda-playground -o jsonpath='{.spec.host}'
 ```
 
-This sets `ALLOW_SELF_SIGNED_CERTS=true` to bypass SSL verification when sending events to AAP.
+**Differences:**
+- **Dev**: `ALLOW_SELF_SIGNED_CERTS=true` (bypasses SSL verification)
+- **Prod**: Higher resource limits (1 CPU, 1Gi memory vs 500m CPU, 512Mi memory)
 
-### Option 3: Kubernetes (with Ingress)
-
-```bash
-# Create namespace
-kubectl create namespace eda-playground
-
-# Deploy using Kustomize
-kubectl apply -k deploy/k8s/overlays/kubernetes/
-
-# Get the ingress
-kubectl get ingress -n eda-playground
-```
 
 ## Configuration
 
@@ -114,15 +98,15 @@ Edit `compose/.env` to customize:
 
 ### Kubernetes/OpenShift
 
-Before deploying, update image reference in `k8s/base/kustomization.yaml`:
+The manifests reference `ghcr.io/bbgrimmett2/eda-playground:latest` by default.
+
+To use a specific version, update `k8s/base/kustomization.yaml`:
 
 ```yaml
 images:
   - name: ghcr.io/bbgrimmett2/eda-playground
-    newTag: latest
+    newTag: v1.0.0  # Change to specific version
 ```
-
-Replace `GITHUB_USERNAME/REPO_NAME` with your actual repository.
 
 ### Environment Variables
 
