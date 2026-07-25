@@ -179,7 +179,19 @@ Example integration structure:
 
 ## Contributing
 
-This project follows the Ansible Code of Conduct.
+This project follows the Ansible Code of Conduct and uses automated workflows to maintain code quality.
+
+**Pull Request Guidelines:**
+- PRs must have a descriptive title (max 72 characters) and description
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) format
+- Automated checks will run for linting, security, and PR metadata
+- See [PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) for the checklist
+
+**Workflows:**
+- **Build Container** - Builds and publishes multi-arch images to ghcr.io
+- **PR Checks** - Validates PR metadata, size, and conflicts
+- **Lint** - Runs YAML, Markdown, TypeScript, Dockerfile, and K8s manifest linting
+- **Commit Lint** - Enforces conventional commit format
 
 ## License
 
