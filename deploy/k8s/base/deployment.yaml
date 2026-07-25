@@ -37,6 +37,8 @@ spec:
               value: "production"
             - name: PORT
               value: "8080"
+            - name: ALLOW_SELF_SIGNED_CERTS
+              value: "false"
           resources:
             requests:
               cpu: 100m

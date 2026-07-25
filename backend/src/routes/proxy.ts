@@ -42,13 +42,16 @@ router.post('/', async (req, res) => {
 
     const startTime = Date.now();
 
+    // Allow self-signed certificates if configured
+    // Set ALLOW_SELF_SIGNED_CERTS=true for dev/test environments with self-signed certs
+    const allowSelfSigned = process.env.ALLOW_SELF_SIGNED_CERTS === 'true';
+
     // Forward request to EDA webhook
     const response = await axios.post(url, payload, {
       headers,
       timeout: 30000,
       validateStatus: () => true, // Don't throw on any status code
-      // Allow self-signed certificates in development
-      httpsAgent: process.env.NODE_ENV === 'development' ? new (require('https').Agent)({
+      httpsAgent: allowSelfSigned ? new (require('https').Agent)({
         rejectUnauthorized: false
       }) : undefined,
     });
