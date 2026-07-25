@@ -12,6 +12,7 @@ labels:
       app.kubernetes.io/managed-by: kustomize
 
 resources:
+  - aap-oauth-secret.yaml
   - configmap.yaml
   - deployment.yaml
   - service.yaml
