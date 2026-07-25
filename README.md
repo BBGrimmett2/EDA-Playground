@@ -40,9 +40,14 @@ docker-compose up -d
 
 **Deploy to OpenShift/MicroShift:**
 ```bash
-oc new-project eda-playground
-oc apply -k deploy/k8s/ocp/
-oc get route eda-playground  # Get your URL
+# Production
+oc apply -k deploy/k8s/overlays/prod/
+
+# Development (with self-signed cert support)
+oc apply -k deploy/k8s/overlays/dev/
+
+# Get your URL
+oc get route eda-playground -n eda-playground
 ```
 
 **Use the pre-built container:**
