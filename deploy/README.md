@@ -13,9 +13,13 @@ deploy/
 │   │   ├── service.yaml
 │   │   └── kustomization.yaml
 │   ├── ocp/               # OpenShift/MicroShift (short path)
+│   │   ├── namespace.yaml
 │   │   ├── route.yaml
 │   │   └── kustomization.yaml
 │   └── overlays/
+│       ├── dev/           # Dev/test with self-signed certs
+│       │   ├── patch-dev-env.yaml
+│       │   └── kustomization.yaml
 │       ├── openshift/     # OpenShift (alternative path)
 │       │   ├── route.yaml
 │       │   └── kustomization.yaml
@@ -62,6 +66,7 @@ docker-compose up -d --build
 
 ### Option 2: OpenShift/MicroShift
 
+**Production deployment:**
 ```bash
 # Create project
 oc new-project eda-playground
@@ -69,12 +74,23 @@ oc new-project eda-playground
 # Deploy using Kustomize (short path)
 oc apply -k deploy/k8s/ocp/
 
-# OR use the overlays path
-# oc apply -k deploy/k8s/overlays/openshift/
+# Get the route
+oc get route eda-playground -o jsonpath='{.spec.host}'
+```
+
+**Dev/Test deployment (with self-signed certificates):**
+
+If your AAP instance uses self-signed certificates, use the dev overlay:
+
+```bash
+# Deploy with self-signed cert support
+oc apply -k deploy/k8s/overlays/dev/
 
 # Get the route
 oc get route eda-playground -o jsonpath='{.spec.host}'
 ```
+
+This sets `ALLOW_SELF_SIGNED_CERTS=true` to bypass SSL verification when sending events to AAP.
 
 ### Option 3: Kubernetes (with Ingress)
 
@@ -116,6 +132,9 @@ The container accepts these environment variables:
 |----------|---------|-------------|
 | `NODE_ENV` | `production` | Application environment |
 | `PORT` | `8080` | HTTP port to listen on |
+| `ALLOW_SELF_SIGNED_CERTS` | `false` | Allow self-signed SSL certificates (dev/test only) |
+
+**Security Note:** Only set `ALLOW_SELF_SIGNED_CERTS=true` in development/test environments. Never use in production.
 
 ## Custom Integrations
 

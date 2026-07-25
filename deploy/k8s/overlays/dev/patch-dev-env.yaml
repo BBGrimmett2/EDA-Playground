@@ -1,0 +1,13 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eda-playground
+spec:
+  template:
+    spec:
+      containers:
+        - name: eda-playground
+          env:
+            - name: ALLOW_SELF_SIGNED_CERTS
+              value: "true"
