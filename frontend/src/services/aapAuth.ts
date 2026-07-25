@@ -19,9 +19,23 @@ const apiClient = axios.create({
   },
 });
 
-// Client ID is needed in frontend for building OAuth URL
-// It's public information (not a secret)
-const AAP_CLIENT_ID = import.meta.env.VITE_AAP_CLIENT_ID || 'eda-playground-client';
+/**
+ * OAuth configuration returned from backend
+ */
+interface OAuthConfig {
+  clientId: string;
+  redirectUri: string;
+  baseUrl: string | null;
+}
+
+/**
+ * Fetch OAuth configuration from backend
+ * Configuration is read from environment variables on the backend
+ */
+async function fetchOAuthConfig(): Promise<OAuthConfig> {
+  const response = await apiClient.get('/api/aap/auth/config');
+  return response.data;
+}
 
 /**
  * Generate PKCE code verifier and challenge
@@ -73,6 +87,9 @@ function base64UrlEncode(input: ArrayBuffer | Uint8Array): string {
  * Generates PKCE codes, stores them, and redirects to AAP
  */
 export async function initiateOAuthFlow(aapBaseUrl: string): Promise<void> {
+  // Fetch OAuth configuration from backend
+  const config = await fetchOAuthConfig();
+
   // Generate PKCE parameters
   const { codeVerifier, codeChallenge, state } = await generatePKCE();
 
@@ -83,16 +100,11 @@ export async function initiateOAuthFlow(aapBaseUrl: string): Promise<void> {
   // Store AAP base URL in localStorage (persists across redirects)
   localStorage.setItem('aap_base_url', aapBaseUrl);
 
-  // Get redirect URI from environment or default to current origin
-  const redirectUri =
-    import.meta.env.VITE_AAP_REDIRECT_URI ||
-    `${window.location.origin}/auth/callback`;
-
   // Build AAP authorization URL
   const authUrl = new URL(`${aapBaseUrl}/o/authorize/`);
   authUrl.searchParams.set('response_type', 'code');
-  authUrl.searchParams.set('client_id', AAP_CLIENT_ID);
-  authUrl.searchParams.set('redirect_uri', redirectUri);
+  authUrl.searchParams.set('client_id', config.clientId);
+  authUrl.searchParams.set('redirect_uri', config.redirectUri);
   authUrl.searchParams.set('code_challenge', codeChallenge);
   authUrl.searchParams.set('code_challenge_method', 'S256');
   authUrl.searchParams.set('state', state);

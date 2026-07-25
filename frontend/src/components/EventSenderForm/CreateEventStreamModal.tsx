@@ -137,7 +137,7 @@ export function CreateEventStreamModal({
       return;
     }
 
-    const fullName = `EDA Playground - ${nameSuffix}`;
+    const fullName = `EDA-Playground - ${nameSuffix}`;
 
     dispatch({ type: 'CREATE_EVENT_STREAM_START' });
 
@@ -261,7 +261,7 @@ export function CreateEventStreamModal({
         <FormGroup label="Name" isRequired fieldId="stream-name">
           <InputGroup>
             <InputGroupItem>
-              <InputGroupText>EDA Playground -</InputGroupText>
+              <InputGroupText>EDA-Playground -</InputGroupText>
             </InputGroupItem>
             <InputGroupItem isFill>
               <TextInput
