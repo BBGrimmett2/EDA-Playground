@@ -39,6 +39,49 @@ spec:
               value: "8080"
             - name: ALLOW_SELF_SIGNED_CERTS
               value: "false"
+            # AAP OAuth Configuration (from secret)
+            - name: AAP_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: AAP_BASE_URL
+                  optional: true
+            - name: AAP_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: AAP_CLIENT_ID
+                  optional: true
+            - name: AAP_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: AAP_CLIENT_SECRET
+                  optional: true
+            - name: AAP_REDIRECT_URI
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: AAP_REDIRECT_URI
+                  optional: true
+            - name: COOKIE_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: COOKIE_DOMAIN
+                  optional: true
+            - name: COOKIE_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: COOKIE_SECURE
+                  optional: true
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: aap-oauth-secret
+                  key: SESSION_SECRET
+                  optional: true
           resources:
             requests:
               cpu: 100m

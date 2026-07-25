@@ -18,6 +18,7 @@ import {
 import { CubesIcon } from '@patternfly/react-icons';
 import { useAppContext } from '../../context/AppContext';
 import { fetchIntegrations } from '../../services/api';
+import { checkAuthStatus } from '../../services/aapAuth';
 import { IntegrationSelector } from './IntegrationSelector';
 import { PayloadEditor } from './PayloadEditor';
 import { ConnectionForm } from './ConnectionForm';
@@ -28,18 +29,26 @@ export function EventSenderForm() {
   const { state, dispatch } = useAppContext();
 
   useEffect(() => {
-    async function loadIntegrations() {
+    async function initializeApp() {
       dispatch({ type: 'SET_LOADING', payload: true });
+
       try {
+        // Load integrations
         const integrations = await fetchIntegrations();
         dispatch({ type: 'SET_INTEGRATIONS', payload: integrations });
+
+        // Check AAP authentication status (if session cookie exists)
+        const authStatus = await checkAuthStatus();
+        if (authStatus.authenticated) {
+          dispatch({ type: 'SET_AAP_SESSION', payload: authStatus });
+        }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load integrations';
         dispatch({ type: 'SEND_REQUEST_FAILURE', payload: errorMessage });
       }
     }
 
-    loadIntegrations();
+    initializeApp();
   }, [dispatch]);
 
   if (state.loading) {

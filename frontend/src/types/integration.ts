@@ -40,6 +40,30 @@ export interface ApiResponse {
   duration: number;
 }
 
+// AAP Event Stream Types
+export interface AAPEventStream {
+  id: number;
+  name: string;
+  url: string;
+  created_at: string;
+  modified_at: string;
+  description?: string;
+}
+
+export interface AAPOrganization {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface AAPSessionInfo {
+  authenticated: boolean;
+  aapBaseUrl: string | null;
+  user: { username: string; email?: string } | null;
+  expiresAt: number | null;
+  healthy?: boolean; // AAP reachability status
+}
+
 export interface AppState {
   integrations: Integration[];
   selectedIntegration: Integration | null;
@@ -51,6 +75,20 @@ export interface AppState {
   sending: boolean;
   response: ApiResponse | null;
   error: string | null;
+
+  // AAP Session (non-sensitive data only, token in httpOnly cookie)
+  aapSession: AAPSessionInfo;
+
+  // Event Streams
+  eventStreams: AAPEventStream[];
+  selectedEventStream: AAPEventStream | null;
+  loadingEventStreams: boolean;
+
+  // Organizations
+  organizations: AAPOrganization[];
+
+  // Event Stream Creation
+  creatingEventStream: boolean;
 }
 
 export type Action =
@@ -65,4 +103,14 @@ export type Action =
   | { type: 'SEND_REQUEST_FAILURE'; payload: string }
   | { type: 'RESET_FORM' }
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'CLEAR_ERROR' };
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'SET_AAP_SESSION'; payload: AAPSessionInfo }
+  | { type: 'CLEAR_AAP_SESSION' }
+  | { type: 'SET_EVENT_STREAMS'; payload: AAPEventStream[] }
+  | { type: 'SELECT_EVENT_STREAM'; payload: AAPEventStream }
+  | { type: 'LOADING_EVENT_STREAMS'; payload: boolean }
+  | { type: 'SET_AAP_HEALTH'; payload: boolean }
+  | { type: 'SET_ORGANIZATIONS'; payload: AAPOrganization[] }
+  | { type: 'CREATE_EVENT_STREAM_START' }
+  | { type: 'CREATE_EVENT_STREAM_SUCCESS'; payload: AAPEventStream }
+  | { type: 'CREATE_EVENT_STREAM_FAILURE'; payload: string };

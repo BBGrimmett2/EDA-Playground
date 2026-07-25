@@ -56,7 +56,7 @@ docker pull ghcr.io/bbgrimmett2/eda-playground:latest
 docker run -p 8080:8080 ghcr.io/bbgrimmett2/eda-playground:latest
 ```
 
-📖 **Detailed instructions:** [Deployment Guide](docs/deployment-guide.md) | [Deploy Directory](deploy/README.md)
+**Detailed instructions:** [Deployment Guide](docs/deployment-guide.md) | [Deploy Directory](deploy/README.md)
 
 ---
 

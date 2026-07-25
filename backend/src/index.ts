@@ -2,12 +2,18 @@
  * EDA Playground - Backend Server
  */
 
+// Load environment variables from .env file
+import 'dotenv/config';
+
 import express from 'express';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 import { corsMiddleware } from './middleware/cors';
 import { errorHandler } from './middleware/errorHandler';
 import integrationsRouter from './routes/integrations';
 import proxyRouter from './routes/proxy';
+import aapRouter from './routes/aap';
+import configRouter from './routes/config';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,6 +21,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 // In production, serve frontend static files
 // In development, use CORS to allow separate frontend server
@@ -36,8 +43,10 @@ app.get('/health', (_req, res) => {
 });
 
 // API routes
+app.use('/api/config', configRouter);
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/proxy', proxyRouter);
+app.use('/api/aap', aapRouter);
 
 // In production, serve index.html for all other routes (SPA routing)
 if (NODE_ENV === 'production') {
