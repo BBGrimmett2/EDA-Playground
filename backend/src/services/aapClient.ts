@@ -106,6 +106,22 @@ export async function fetchEventStreams(
       );
     }
 
+    // Normalize event stream URLs to match aapBaseUrl protocol
+    // AAP returns URLs with the external protocol (HTTPS), but we need to use
+    // the same protocol as aapBaseUrl (HTTP on MicroShift, HTTPS on OpenShift)
+    const baseUrlObj = new URL(normalizeBaseUrl(aapBaseUrl));
+    streams = streams.map((stream) => {
+      const streamUrlObj = new URL(stream.url);
+      // Replace protocol and host to match aapBaseUrl
+      streamUrlObj.protocol = baseUrlObj.protocol;
+      streamUrlObj.host = baseUrlObj.host;
+
+      return {
+        ...stream,
+        url: streamUrlObj.toString(),
+      };
+    });
+
     return streams;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -341,7 +357,16 @@ export async function createEventStream(
       timeout: 30000,
     });
 
-    return response.data;
+    // Normalize event stream URL to match aapBaseUrl protocol
+    const baseUrlObj = new URL(normalizeBaseUrl(aapBaseUrl));
+    const streamUrlObj = new URL(response.data.url);
+    streamUrlObj.protocol = baseUrlObj.protocol;
+    streamUrlObj.host = baseUrlObj.host;
+
+    return {
+      ...response.data,
+      url: streamUrlObj.toString(),
+    };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError;
