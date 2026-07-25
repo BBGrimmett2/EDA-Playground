@@ -3,6 +3,7 @@
  */
 
 import express from 'express';
+import path from 'path';
 import { corsMiddleware } from './middleware/cors';
 import { errorHandler } from './middleware/errorHandler';
 import integrationsRouter from './routes/integrations';
@@ -14,7 +15,16 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
 app.use(express.json());
-app.use(corsMiddleware);
+
+// In production, serve frontend static files
+// In development, use CORS to allow separate frontend server
+if (NODE_ENV === 'production') {
+  const publicPath = path.join(__dirname, '..', 'public');
+  app.use(express.static(publicPath));
+  console.log(`Serving static files from: ${publicPath}`);
+} else {
+  app.use(corsMiddleware);
+}
 
 // Health check endpoint
 app.get('/health', (_req, res) => {
@@ -28,6 +38,13 @@ app.get('/health', (_req, res) => {
 // API routes
 app.use('/api/integrations', integrationsRouter);
 app.use('/api/proxy', proxyRouter);
+
+// In production, serve index.html for all other routes (SPA routing)
+if (NODE_ENV === 'production') {
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  });
+}
 
 // Error handling (must be last)
 app.use(errorHandler);

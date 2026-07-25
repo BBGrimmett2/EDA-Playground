@@ -5,7 +5,10 @@
 import axios from 'axios';
 import type { ApiResponse, AuthType } from '../types/integration';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// In production (container), use relative URLs to same origin
+// In development, use explicit backend URL
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  (import.meta.env.MODE === 'production' ? '' : 'http://localhost:3001');
 
 /**
  * Send event payload to EDA webhook via backend proxy
@@ -47,8 +50,9 @@ export async function sendEventToEDA(
 
     // If backend returned an error, throw it
     if (response.status >= 400) {
+      const errorData = response.data as any;
       throw new Error(
-        response.data?.message || response.data?.error || 'Proxy request failed'
+        errorData?.message || errorData?.error || 'Proxy request failed'
       );
     }
 

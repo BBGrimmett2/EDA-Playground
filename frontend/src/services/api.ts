@@ -5,7 +5,10 @@
 import axios from 'axios';
 import type { Integration, IntegrationsListResponse } from '../types/integration';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+// In production (container), use relative URLs to same origin
+// In development, use explicit backend URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.MODE === 'production' ? '' : 'http://localhost:3001');
 
 const apiClient = axios.create({
   baseURL: BACKEND_URL,
