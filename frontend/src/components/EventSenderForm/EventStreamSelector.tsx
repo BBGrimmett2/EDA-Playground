@@ -112,11 +112,28 @@ export function EventStreamSelector() {
 
   if (error) {
     return (
-      <FormGroup label="Event Stream" isRequired fieldId="event-stream-selector">
-        <Alert variant="warning" title="Unable to load event streams" isInline>
-          {error}
-        </Alert>
-      </FormGroup>
+      <>
+        <FormGroup label="Event Stream" isRequired fieldId="event-stream-selector">
+          <Alert variant="warning" title="Unable to load event streams" isInline>
+            <p>{error}</p>
+            <Button
+              variant="link"
+              isInline
+              icon={<PlusCircleIcon />}
+              onClick={() => setCreateModalOpen(true)}
+              style={{ paddingLeft: 0 }}
+            >
+              Create new event stream
+            </Button>
+          </Alert>
+        </FormGroup>
+
+        <CreateEventStreamModal
+          isOpen={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSuccess={handleCreateSuccess}
+        />
+      </>
     );
   }
 
